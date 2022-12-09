@@ -1,26 +1,37 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-
+import { Repository } from 'typeorm';
+import { Injectable, Inject } from '@nestjs/common';
+import { User } from './entities/user.entity';
+import { BusinessException } from '@/common/exceptions/business.exception';
+import { getUserToken } from '@/helper/gitlab/auth';
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @Inject('USER_REPOSITORY')
+    private userRepository: Repository<User>,
+  ) {}
+  async createOrSave({ id, ...user }) {
+    let data = {};
+    try {
+      data = id
+        ? await this.userRepository.update(id, user)
+        : await this.userRepository.save(user);
+    } catch (error) {
+      throw new BusinessException(error);
+    }
+    return data;
   }
-
-  findAll() {
-    return `This action returns all user`;
+  async getUserToken(data) {
+    const res: any = await getUserToken(data);
+    if (res.code !== 0) {
+      throw new BusinessException(res.msg);
+    }
+    return res.data;
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async getTokenByApplications(data) {
+    const res: any = await getUserToken(data);
+    if (res.code !== 0) {
+      throw new BusinessException(res.msg);
+    }
+    return res.data;
   }
 }

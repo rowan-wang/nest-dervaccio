@@ -4,7 +4,11 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { AllExceptionsFilter } from './common/exceptions/base.exception.filter';
 import { HttpExceptionFilter } from './common/exceptions/http.exception.filter';
 
-import { VersioningType, VERSION_NEUTRAL } from '@nestjs/common';
+import {
+  VersioningType,
+  VERSION_NEUTRAL,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -19,7 +23,8 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
-
+  // 全局路由前缀
+  app.setGlobalPrefix('api');
   // 接口版本化管理
   app.enableVersioning({
     defaultVersion: [VERSION_NEUTRAL, '1', '2'],
@@ -35,6 +40,9 @@ async function bootstrap() {
     module.hot.accept();
     module.hot.dispose(() => app.close());
   }
+  // 启动全局字段校验，保证请求接口字段校验正确
+  app.useGlobalPipes(new ValidationPipe());
+
   // 创建文档
   generateDocument(app);
 

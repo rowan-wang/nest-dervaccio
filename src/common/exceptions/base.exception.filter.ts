@@ -6,7 +6,6 @@ import {
   ArgumentsHost,
   HttpStatus,
   ServiceUnavailableException,
-  HttpException,
 } from '@nestjs/common';
 // base.exception.filter => Catch 的参数为空时，默认捕获所有异常
 @Catch()

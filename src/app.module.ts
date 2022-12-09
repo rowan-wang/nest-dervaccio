@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { getConfig } from './utils';
-
+import { WebsocketModule } from './websocket/websocket.module';
 @Module({
   imports: [
     CacheModule.register({
@@ -16,6 +16,7 @@ import { getConfig } from './utils';
       load: [getConfig],
     }),
     UserModule,
+    WebsocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],
